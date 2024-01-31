@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Grade Calculator</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+                text-align: center;
+            }
+
+            h2 {
+                color: #333;
+            }
+
+            select {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 50%;
+                margin: 20px auto;
+                background-color: #fff;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            th, td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: center;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            input[type="number"] {
+                width: 60px;
+                padding: 5px;
+                box-sizing: border-box;
+            }
+
+            input[type="text"] {
+                width: 200px;
+                padding: 5px;
+                box-sizing: border-box;
+            }
+
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            #totalGrade {
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h2>Grade Calculator</h2>
+
+        <form id="courseSelectForm" action="javascript:loadCourseData()">
+            <input type="text" id="courseSelect" placeholder="Course code e.g. CSC209" required>
+        </form>
+
+        <form id="gradeForm" action="javascript:calculateTotalGrade()">
+            <div id="courseDataContainer">
+                <!-- Course data will be loaded here -->
+            </div>
+            <button type="submit">Calculate Total Grade</button>
+        </form>
+        
+
+        <p id="totalGrade">Total Grade: <span id="displayTotal"></span></p>
+
+
+        <script>
+            var globalData;
+            function loadCourseData() {
+                var selectedCourse = document.getElementById("courseSelect").value;
+
+                // You can fetch the data for the selected course from the server or load it from a JSON file
+
+                fetch('http://localhost:3000/api/courses/' + selectedCourse) // TODO: Change for actual address?
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Code to handle successful response
+                        displayCourseData(data);
+                        globalData = data;
+
+                    })
+                    .catch(error => {
+                        // Code to handle errors
+                        console.error('Fetch failed:', error);
+                    });
+            
+            }
+
+            function displayCourseData(data) {
+                var container = document.getElementById("courseDataContainer");
+
+                // Clear previous data
+                container.innerHTML = "";
+
+                // Create a table to display assignment weights
+                var table = document.createElement("table");
+                table.innerHTML = "<tr><th>Assignment</th><th>Weight</th><th>Expected Grade</th></tr>";
+                
+                var rowNumber = 1;
+                data.assignments.forEach(function (assignment) {
+                    var row = table.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    cell1.textContent = assignment.name;
+                    cell2.textContent = +(assignment.weight*100).toFixed(2) + '%';
+                    cell3.innerHTML = `<input type="number" name="assessment${rowNumber}" min="0" max="100" step="any" required>`;
+                    rowNumber += 1;
+                });
+                
+                container.appendChild(table);
+
+                // Enable the Calculate Total Grade button
+                document.getElementById("totalGrade").style.display = "block";
+            }
+
+            function calculateTotalGrade() {
+                // Implement the logic to calculate the total grade based on assignment weights and user input
+                // This will depend on the structure of your data and calculation logic
+                // For simplicity, we'll use a static example here
+
+                var totalGrade = 0;
+
+                var rowNumber = 1;
+                globalData.assignments.forEach(function (assignment) {
+                    var grade = parseInt(document.forms["gradeForm"][`assessment${rowNumber}`].value) * assignment.weight;
+                    totalGrade += grade;
+                    rowNumber += 1;
+                });
+
+
+                document.getElementById("displayTotal").innerHTML = totalGrade.toFixed(2);
+            }
+        </script>
+    </body>
+</html>
