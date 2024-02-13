@@ -92,7 +92,7 @@
 
                 // You can fetch the data for the selected course from the server or load it from a JSON file
 
-                fetch('http://localhost:3000/api/courses/' + selectedCourse) // TODO: Change for actual address?
+                fetch('https://3.97.142.122:3000/api/courses/' + selectedCourse) // TODO: Change for actual address?
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
