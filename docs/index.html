@@ -92,7 +92,7 @@
 
                 // You can fetch the data for the selected course from the server or load it from a JSON file
 
-                fetch('https://grade-calculator-api.glitch.me/api/courses/' + selectedCourse)
+                fetch('https://vercel-grade-calc-api.vercel.app/api/courses/' + selectedCourse)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
